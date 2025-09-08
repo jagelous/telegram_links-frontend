@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { TelegramLink, CreateTelegramLinkData, UpdateTelegramLinkData, ApiResponse } from '../types/telegramLink';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+const API_BASE_URL = 'https://longlifecoin.com/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

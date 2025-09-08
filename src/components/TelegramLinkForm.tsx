@@ -29,6 +29,7 @@ const TelegramLinkForm: React.FC<TelegramLinkFormProps> = ({
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
   const modalRef = useRef<HTMLDivElement>(null);
   const ownerNameInputRef = useRef<HTMLInputElement>(null);
+  const telegramLinkInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch owner names from database
   const fetchOwnerNames = async () => {
@@ -114,9 +115,9 @@ const TelegramLinkForm: React.FC<TelegramLinkFormProps> = ({
       }
     };
 
-    // Focus on owner name input when modal opens
-    if (ownerNameInputRef.current) {
-      ownerNameInputRef.current.focus();
+    // Focus on telegram link input when modal opens
+    if (telegramLinkInputRef.current) {
+      telegramLinkInputRef.current.focus();
     }
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -245,6 +246,26 @@ const TelegramLinkForm: React.FC<TelegramLinkFormProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
+            <label htmlFor="telegram_link" className="block text-sm font-medium text-slate-700 mb-2">
+              Telegram Link *
+            </label>
+            <input
+              ref={telegramLinkInputRef}
+              type="url"
+              id="telegram_link"
+              name="telegram_link"
+              value={formData.telegram_link}
+              onChange={handleChange}
+              placeholder="https://t.me/username"
+              className={`input-field ${errors.telegram_link ? 'border-red-500 focus:ring-red-500' : ''}`}
+              disabled={isLoading}
+            />
+            {errors.telegram_link && (
+              <p className="mt-1 text-sm text-red-600">{errors.telegram_link}</p>
+            )}
+          </div>
+
+          <div>
             <label htmlFor="owner_name" className="block text-sm font-medium text-slate-700 mb-2">
               Owner Name *
             </label>
@@ -301,25 +322,6 @@ const TelegramLinkForm: React.FC<TelegramLinkFormProps> = ({
             </div>
             {errors.owner_name && (
               <p className="mt-1 text-sm text-red-600">{errors.owner_name}</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="telegram_link" className="block text-sm font-medium text-slate-700 mb-2">
-              Telegram Link *
-            </label>
-            <input
-              type="url"
-              id="telegram_link"
-              name="telegram_link"
-              value={formData.telegram_link}
-              onChange={handleChange}
-              placeholder="https://t.me/username"
-              className={`input-field ${errors.telegram_link ? 'border-red-500 focus:ring-red-500' : ''}`}
-              disabled={isLoading}
-            />
-            {errors.telegram_link && (
-              <p className="mt-1 text-sm text-red-600">{errors.telegram_link}</p>
             )}
           </div>
 

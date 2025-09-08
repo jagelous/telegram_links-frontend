@@ -14,6 +14,7 @@ import EmptyState from './components/EmptyState';
 
 const App: React.FC = () => {
   const [telegramLinks, setTelegramLinks] = useState<TelegramLink[]>([]);
+  const [allTelegramLinks, setAllTelegramLinks] = useState<TelegramLink[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,6 +26,20 @@ const App: React.FC = () => {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const itemsPerPage = 6;
+
+  // Fetch all telegram links for statistics calculation
+  const fetchAllTelegramLinks = async () => {
+    try {
+      const response = await telegramLinkService.getTelegramLinks(1, 1000, ''); // Get a large number to get all
+      
+      if (response.success && response.data) {
+        setAllTelegramLinks(response.data);
+        setTotalItems(response.pagination?.totalItems || response.data.length);
+      }
+    } catch (error: any) {
+      console.error('Error fetching all telegram links:', error);
+    }
+  };
 
   const fetchTelegramLinks = async (page = 1, search = '') => {
     try {
@@ -50,7 +65,16 @@ const App: React.FC = () => {
 
   useEffect(() => {
     fetchTelegramLinks(currentPage, searchTerm);
+    // Fetch all links for statistics when component mounts
+    if (allTelegramLinks.length === 0) {
+      fetchAllTelegramLinks();
+    }
   }, [currentPage, searchTerm]);
+
+  // Fetch all links for statistics on component mount
+  useEffect(() => {
+    fetchAllTelegramLinks();
+  }, []);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -91,6 +115,7 @@ const App: React.FC = () => {
         toast.success('Telegram link created successfully!');
         setShowForm(false);
         fetchTelegramLinks(currentPage, searchTerm);
+        fetchAllTelegramLinks(); // Refresh all links for updated statistics
       } else {
         toast.error(response.error || 'Failed to create link');
       }
@@ -113,6 +138,7 @@ const App: React.FC = () => {
         toast.success('Telegram link updated successfully!');
         setEditingLink(null);
         fetchTelegramLinks(currentPage, searchTerm);
+        fetchAllTelegramLinks(); // Refresh all links for updated statistics
       } else {
         toast.error(response.error || 'Failed to update link');
       }
@@ -136,6 +162,7 @@ const App: React.FC = () => {
       if (response.success) {
         toast.success('Telegram link deleted successfully!');
         fetchTelegramLinks(currentPage, searchTerm);
+        fetchAllTelegramLinks(); // Refresh all links for updated statistics
       } else {
         toast.error(response.error || 'Failed to delete link');
       }
@@ -156,6 +183,36 @@ const App: React.FC = () => {
     setEditingLink(null);
   };
 
+  // Calculate statistics using Set methods and proper data processing
+  const calculateUniqueUsers = () => {
+    // Using Set to get unique owner names (like Issac, Hector, Max, Welcome, Diamond)
+    const uniqueOwners = new Set<string>();
+    
+    allTelegramLinks.forEach(link => {
+      if (link.owner_name && link.owner_name.trim()) {
+        uniqueOwners.add(link.owner_name.trim());
+      }
+    });
+    
+    return uniqueOwners.size;
+  };
+
+  const calculateThisMonthLinks = () => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    // Filter links created this month and sort by date
+    const thisMonthLinks = allTelegramLinks
+      .filter(link => {
+        const linkDate = new Date(link.createdAt);
+        return linkDate.getMonth() === currentMonth && linkDate.getFullYear() === currentYear;
+      })
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    
+    return thisMonthLinks.length;
+  };
+
   const stats = [
     {
       label: 'Total Links',
@@ -164,18 +221,14 @@ const App: React.FC = () => {
       color: 'text-telegram-600'
     },
     {
-      label: 'Unique Owners',
-      value: new Set(telegramLinks.map(link => link.owner_name)).size,
+      label: 'Unique Users',
+      value: calculateUniqueUsers(),
       icon: Users,
       color: 'text-blue-600'
     },
     {
       label: 'This Month',
-      value: telegramLinks.filter(link => {
-        const linkDate = new Date(link.createdAt);
-        const now = new Date();
-        return linkDate.getMonth() === now.getMonth() && linkDate.getFullYear() === now.getFullYear();
-      }).length,
+      value: calculateThisMonthLinks(),
       icon: Calendar,
       color: 'text-green-600'
     }
