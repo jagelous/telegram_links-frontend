@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Plus, X, Edit3, Lightbulb, Copy } from 'lucide-react';
+import { Plus, X, Edit3, Copy } from 'lucide-react';
 import { TelegramLink, CreateTelegramLinkData, UpdateTelegramLinkData } from '../types/telegramLink';
 import { telegramLinkService } from '../services/api';
 

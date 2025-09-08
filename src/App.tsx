@@ -68,10 +68,6 @@ const App: React.FC = () => {
 
   useEffect(() => {
     fetchTelegramLinks(currentPage, searchTerm);
-    // Fetch all links for statistics when component mounts
-    if (allTelegramLinks.length === 0) {
-      fetchAllTelegramLinks();
-    }
   }, [currentPage, searchTerm]);
 
   // Fetch all links for statistics on component mount

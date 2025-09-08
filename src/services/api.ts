@@ -1,7 +1,13 @@
 import axios from 'axios';
 import { TelegramLink, CreateTelegramLinkData, UpdateTelegramLinkData, ApiResponse } from '../types/telegramLink';
 
-const API_BASE_URL = '/api';
+// Use proxy in development, direct URL in production
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://longlifecoin.com/api' 
+  : '/api';
+
+console.log('Environment:', process.env.NODE_ENV);
+console.log('API Base URL:', API_BASE_URL);
 
 const api = axios.create({
   baseURL: API_BASE_URL,
