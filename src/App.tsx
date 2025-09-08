@@ -30,14 +30,17 @@ const App: React.FC = () => {
   // Fetch all telegram links for statistics calculation
   const fetchAllTelegramLinks = async () => {
     try {
-      const response = await telegramLinkService.getTelegramLinks(1, 1000, ''); // Get a large number to get all
+      const response = await telegramLinkService.getTelegramLinks(1, 100, ''); // Start with reasonable limit
       
       if (response.success && response.data) {
         setAllTelegramLinks(response.data);
         setTotalItems(response.pagination?.totalItems || response.data.length);
+      } else {
+        console.error('Failed to fetch all links:', response.error);
       }
     } catch (error: any) {
       console.error('Error fetching all telegram links:', error);
+      // Don't show toast error for background statistics fetch
     }
   };
 

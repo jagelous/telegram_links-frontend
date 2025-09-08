@@ -23,6 +23,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "proxy": "https://longlifecoin.com",
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -46,6 +47,7 @@
     "@testing-library/react": "^16.3.0",
     "@types/jest": "^30.0.0",
     "autoprefixer": "^10.4.16",
+    "http-proxy-middleware": "^3.0.5",
     "postcss": "^8.4.32",
     "tailwindcss": "^3.3.6"
   }

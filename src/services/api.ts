@@ -1,12 +1,13 @@
 import axios from 'axios';
 import { TelegramLink, CreateTelegramLinkData, UpdateTelegramLinkData, ApiResponse } from '../types/telegramLink';
 
-const API_BASE_URL = 'https://longlifecoin.com/api';
+const API_BASE_URL = '/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+    'Cache-Control': 'no-cache',
   },
 });
 
@@ -33,7 +34,6 @@ api.interceptors.response.use(
 );
 
 export const telegramLinkService = {
-  // Get all telegram links with pagination and search
   getTelegramLinks: async (page = 1, limit = 10, search = ''): Promise<ApiResponse<TelegramLink[]>> => {
     const response = await api.get(`/telegram-links?page=${page}&limit=${limit}&search=${search}`);
     return response.data;
